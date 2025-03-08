@@ -1,4 +1,4 @@
-// File: backend/app.js
+// backend/app.js
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
@@ -11,18 +11,12 @@ const userRoutes = require('./routes/userRoutes');
 const taskRoutes = require('./routes/taskRoutes');
 const groupRoutes = require('./routes/groupRoutes');
 
+// Import the database connection function
+const connectDB = require('./db/connect');
+
 // Middleware
 app.use(express.json());
-app.use(cors({
-  origin: '*', // Reemplazar con los dominios de tu frontend en producción
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
-
-app.options('*', cors());
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -35,21 +29,6 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ msg: 'Something went wrong!' });
 });
-
-// Connect to MongoDB
-const connectDB = async () => {
-  try {
-    console.log('Connecting to MongoDB...');
-    await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log('MongoDB connected');
-  } catch (error) {
-    console.error(`Error: ${error.message}`);
-    process.exit(1);
-  }
-};
 
 // Start server
 const PORT = process.env.PORT || 5000;
